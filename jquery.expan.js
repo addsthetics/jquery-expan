@@ -11,11 +11,13 @@
     // Create the defaults once
     var pluginName = 'expan',
         defaults = {
-            scrollSpeed: 1000,
+            scrollSpeed  : 1000,
+            isResponsive : false,
+            mobileBreakingPoint : 480,
             medieObjTemplate : function(){
                     return $('<div class="media attribution"></div>')
             },
-            mediaLeftTemplate: function(imgURI,name){
+            mediaLeftTemplate : function(imgURI,name){
                     return '<span class="ex-close">&#10005;</span>'
                             + '<div class="img">'
                             + '<img src="'+ imgURI +'" alt="'+ name +'"/>'
@@ -33,7 +35,8 @@
     // The actual plugin constructor
     function Plugin( element, options, names) {
         this.element = element;
-
+        
+        this.last = null;
        
         options = options || function(){console.log('Test');return {};};
 
@@ -51,110 +54,33 @@
     Plugin.prototype.init = function () {
         var that = this ;
         that.open.apply(that);
-        /*$(that.element).on('click', '.ex-col',function(){
-
-            var img, info, item, tooltips , name, expan, windowWidth, person = $(this);
-
-
-            name = person.data('name').toLowerCase();
-
-            windowWidth = $(window).width();
-
-            if(name == 'na'){
-
-                return;
-
-            }
-
-            item = that.names[name];
-
-            if(last !== person){
-
-                $(last).find('.tooltips').remove();
-
-            }
-            
-            tooltips = person.find('.tooltips').length > 0 ?  $('') : person.append('<span class="tooltips"></span>').find('.tooltips') ;
-
-            media = that.options.medieObjTemplate();
-
-            img   = that.options.mediaLeftTemplate(item.imgSrc,name);
-
-            info  = that.options.mediaRightTemplate(name,item.bio);
-            
-            media.html(img+info);
-            if(person.data('row') === $(that.element).find('.expan').data('sibling') && windowWidth >= 480){
-
-                tooltips.addClass('expanded');
-                
-                $(that.element).find('.expan').html(media);
-                media.addClass('ex-quick');
-                setTimeout(function() {
-                     media.addClass('show');
-                }, 4);
-
-            }else if( windowWidth >= 480){
-
-                $(that.element).find('.expan').remove();
-
-                var expan = $('<div class="ex-row expan" data-sibling="'+person.data('row')+'"></div>');
-                
-
-                expan.append(media);
-                setTimeout(function() {
-                     media.addClass('show');
-                }, 4);
-               
-                $(this).parent().after(expan);
-
-                tooltips.addClass('expanded');
-
-                setTimeout(function() {
-                    expan.addClass('expanded');
-                    $('html,body').animate({scrollTop: expan.position().top - 100}, that.options.scrollSpeed);
-                }, 50);
-            }else{
-                $(that.element).find('.expan').remove();
-
-                var expan = $('<div class="ex-row expan" data-sibling="' + person.data('row') + '"></div>');
-                
-
-                expan.append(media);
-                setTimeout(function() {
-                     media.addClass('show');
-                }, 4);
-               
-                person.after(expan);
-
-                tooltips.addClass('expanded');
-
-                expan.addClass('expanded');
-            }
-
-            last = this;  
-        });*/
-
-        $(that.element).on('click', '.ex-close',function(){
+        that.close.apply(that);
+        /*$(that.element).on('click', '.ex-close',function(){
             var expan = $(this).parent().parent();
+
             $(this).parent().removeClass('show');
+
             setTimeout(function() {
                 expan.removeClass('expanded');
             }, 250);
              
             
-            $(last).find('.tooltips').removeClass('expanded');
+            $(self.last).find('.tooltips').removeClass('expanded');
+
             setTimeout(function() {
                    expan.remove();
             }, 400);
             
-        });
+        });*/
     };
+
+    /*Open method which expands the expan with the Items information and media.*/
     Plugin.prototype.open = function(){
-         var last, self = this;
+         var self = this;
+         /*Sets the Click event that expands the expan*/
          $(self.element).on('click', '.ex-col',function(){
 
             var img, info, item, tooltips , name, expan, windowWidth, person = $(this);
-
 
             name = person.data('name').toLowerCase();
 
@@ -168,13 +94,17 @@
 
             item = self.names[name];
 
-            if(last !== person){
+            if(self.last !== person){
 
-                $(last).find('.tooltips').remove();
+                $(self.last).find('.tooltips').remove();
 
             }
             
+            //add tool tip to element only if it doesn't already have one. Also assigned a value to tooltips.
             tooltips = person.find('.tooltips').length > 0 ?  $('') : person.append('<span class="tooltips"></span>').find('.tooltips') ;
+
+            //Build our media object
+            expan = $('<div class="ex-row expan" data-sibling="' + person.data('row') + '"></div>');
 
             media = self.options.medieObjTemplate();
 
@@ -183,7 +113,8 @@
             info  = self.options.mediaRightTemplate(name,item.bio);
             
             media.html(img+info);
-            if(person.data('row') === $(self.element).find('.expan').data('sibling') && windowWidth >= 480){
+
+            if(person.data('row') === $(self.element).find('.expan').data('sibling') && !self.options.isResponsive){
 
                 tooltips.addClass('expanded');
                 
@@ -191,18 +122,34 @@
 
                 media.addClass('ex-quick');
 
+                // Give jquery is bit of time to render the new element. If the class is added to the node
+                // before is fully renders, the CSS transition appear choppy. 
                 setTimeout(function() {
                      media.addClass('show');
                 }, 4);
 
-            }else if( windowWidth >= 480){
+            }else if(self.options.isResponsive && windowWidth < self.options.mobileBreakingPoint){
 
                 $(self.element).find('.expan').remove();
+                
+                expan.append(media);
 
-                var expan = $('<div class="ex-row expan" data-sibling="'+person.data('row')+'"></div>');
+                setTimeout(function() {
+                     media.addClass('show');
+                }, 4);
+               
+                person.after(expan);
+
+                tooltips.addClass('expanded');
+
+                expan.addClass('expanded');
+            }else {
+
+                $(self.element).find('.expan').remove();
                 
 
                 expan.append(media);
+
                 setTimeout(function() {
                      media.addClass('show');
                 }, 4);
@@ -216,28 +163,37 @@
                     $('html,body').animate({scrollTop: expan.position().top - 100}, self.options.scrollSpeed);
                 }, 50);
 
-            }else{
-
-                $(self.element).find('.expan').remove();
-
-                var expan = $('<div class="ex-row expan" data-sibling="' + person.data('row') + '"></div>');
-                
-
-                expan.append(media);
-                setTimeout(function() {
-                     media.addClass('show');
-                }, 4);
-               
-                person.after(expan);
-
-                tooltips.addClass('expanded');
-
-                expan.addClass('expanded');
             }
 
-            last = this;  
+            self.last = this;
+
         });
-    }
+    };
+
+    /*Closed method which contacts the expan and removes it from the DOM.*/
+    Plugin.prototype.close = function(){
+        var self = this;
+
+        $(self.element).on('click', '.ex-close',function(){
+
+            var tooltips ,expan = $(this).parent().parent();
+
+            tooltip = $(self.last).find('.tooltips');
+
+            $(this).parent().removeClass('show');
+            
+            tooltip.removeClass('expanded');
+
+            expan.removeClass('expanded') 
+
+            setTimeout(function() {
+                   expan.remove();
+
+                   tooltip.remove();
+            }, 300);
+            
+        });
+    };
     // A really lightweight plugin wrapper around the constructor, 
     // preventing against multiple instantiations
     $.fn.expan = function ( options,names ) {
