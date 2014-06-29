@@ -1,8 +1,6 @@
-
-// Place any jQuery/helper plugins in here.
 /*!
- * Expan tooltips jQuery
- * Original author: @addsthetics
+ * Expan tooltips v0.9 2014
+ * Original author: Joel Paulino @addsthetics
  * Licensed under the MIT license
  */
 
