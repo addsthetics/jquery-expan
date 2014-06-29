@@ -51,25 +51,9 @@
 
     Plugin.prototype.init = function () {
         var that = this ;
+        
         that.open.apply(that);
         that.close.apply(that);
-        /*$(that.element).on('click', '.ex-close',function(){
-            var expan = $(this).parent().parent();
-
-            $(this).parent().removeClass('show');
-
-            setTimeout(function() {
-                expan.removeClass('expanded');
-            }, 250);
-             
-            
-            $(self.last).find('.tooltips').removeClass('expanded');
-
-            setTimeout(function() {
-                   expan.remove();
-            }, 400);
-            
-        });*/
     };
 
     /*Open method which expands the expan with the Items information and media.*/
