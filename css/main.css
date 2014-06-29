@@ -17,6 +17,11 @@ body{
     width    : 100%;
     height   : 207px; 
     margin   : 25px 0 25px;
+     -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+     -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
 
 .expan{
@@ -24,15 +29,11 @@ body{
     background : rgb(0, 0, 0);
     background : rgba(255,255,255,.12);
     height     : 0;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-     -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
+   
 }
 .expan.expanded{
-    max-height :300px;
-    height     : auto !important;
+    height :300px;
+    
     margin     : -5px 0 0;
 }
 
@@ -165,16 +166,16 @@ body{
 .expanded .ex-close{
   opacity: 1;
 }
-.ex-row.expanded h2{
+.ex-row.expan h2{
   font-size: 24px;
   margin-bottom: 15px;
   text-transform: capitalize;
 }
-.ex-row.expanded h3{
+.ex-row.expan h3{
   font-size: 18px;
   margin-bottom: 15px;
 }
-.ex-row.expanded p{
+.ex-row.expan p{
   font-size: 14px;
   line-height: 1.5;
   letter-spacing: 1px;
