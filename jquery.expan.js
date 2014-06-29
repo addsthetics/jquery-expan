@@ -7,12 +7,26 @@
  */
 
 (function ( $, window, document, undefined) {
-    
 
     // Create the defaults once
     var pluginName = 'expan',
         defaults = {
-            scrollSpeed: 1000
+            scrollSpeed: 1000,
+            medieObjTemplate : function(){
+                    return $('<div class="media attribution"></div>')
+            },
+            mediaLeftTemplate: function(imgURI,name){
+                    return '<span class="ex-close">&#10005;</span>'
+                            + '<div class="img">'
+                            + '<img src="'+ imgURI +'" alt="'+ name +'"/>'
+                         + '</div>';
+            },
+            mediaRightTemplate : function(name, bio){
+                    return  '<div class="bd">'
+                            + '<h2>'+name+ '</h2>'
+                            + '<p>'+bio+'</p>'
+                        + '</div>';
+            }
         },
         team = {};
 
@@ -22,22 +36,24 @@
 
        
         options = options || function(){console.log('Test');return {};};
+
         this.options = $.extend( {}, defaults, options) ;
+
         this.names = $.extend( {}, team, names) ;
         
         this._defaults = defaults;
+
         this._name = pluginName;
         
         this.init();
     }
 
     Plugin.prototype.init = function () {
-        var that = this, last ;
+        var that = this ;
+        that.open.apply(that);
+        /*$(that.element).on('click', '.ex-col',function(){
 
-        $(that.element).find('expan');
-
-        $(that.element).on('click', '.ex-col',function(){
-            var item, tooltips , name, expan, windowWidth, person = $(this);
+            var img, info, item, tooltips , name, expan, windowWidth, person = $(this);
 
 
             name = person.data('name').toLowerCase();
@@ -45,30 +61,26 @@
             windowWidth = $(window).width();
 
             if(name == 'na'){
+
                 return;
+
             }
+
             item = that.names[name];
 
             if(last !== person){
+
                 $(last).find('.tooltips').remove();
+
             }
             
             tooltips = person.find('.tooltips').length > 0 ?  $('') : person.append('<span class="tooltips"></span>').find('.tooltips') ;
 
-            
-            media = $('<div class="media attribution"></div>');
+            media = that.options.medieObjTemplate();
 
-            img   = '<span class="ex-close">&#10005;</span>'
-                    + '<div class="img">'
-                    + '<img src="'+item.imgSrc+'"/>'
-                    + '</div>';
+            img   = that.options.mediaLeftTemplate(item.imgSrc,name);
 
-            info  = '<div class="bd">'
-                    + '<h2>'+name+ '</h2>'
-                    + '<p>'+item.bio+'</p>'
-                    + '</div>';
-
-            
+            info  = that.options.mediaRightTemplate(name,item.bio);
             
             media.html(img+info);
             if(person.data('row') === $(that.element).find('.expan').data('sibling') && windowWidth >= 480){
@@ -120,7 +132,8 @@
             }
 
             last = this;  
-        });
+        });*/
+
         $(that.element).on('click', '.ex-close',function(){
             var expan = $(this).parent().parent();
             $(this).parent().removeClass('show');
@@ -136,7 +149,95 @@
             
         });
     };
+    Plugin.prototype.open = function(){
+         var last, self = this;
+         $(self.element).on('click', '.ex-col',function(){
 
+            var img, info, item, tooltips , name, expan, windowWidth, person = $(this);
+
+
+            name = person.data('name').toLowerCase();
+
+            windowWidth = $(window).width();
+
+            if(name == 'na'){
+
+                return;
+
+            }
+
+            item = self.names[name];
+
+            if(last !== person){
+
+                $(last).find('.tooltips').remove();
+
+            }
+            
+            tooltips = person.find('.tooltips').length > 0 ?  $('') : person.append('<span class="tooltips"></span>').find('.tooltips') ;
+
+            media = self.options.medieObjTemplate();
+
+            img   = self.options.mediaLeftTemplate(item.imgSrc,name);
+
+            info  = self.options.mediaRightTemplate(name,item.bio);
+            
+            media.html(img+info);
+            if(person.data('row') === $(self.element).find('.expan').data('sibling') && windowWidth >= 480){
+
+                tooltips.addClass('expanded');
+                
+                $(self.element).find('.expan').html(media);
+
+                media.addClass('ex-quick');
+
+                setTimeout(function() {
+                     media.addClass('show');
+                }, 4);
+
+            }else if( windowWidth >= 480){
+
+                $(self.element).find('.expan').remove();
+
+                var expan = $('<div class="ex-row expan" data-sibling="'+person.data('row')+'"></div>');
+                
+
+                expan.append(media);
+                setTimeout(function() {
+                     media.addClass('show');
+                }, 4);
+               
+                $(this).parent().after(expan);
+
+                tooltips.addClass('expanded');
+
+                setTimeout(function() {
+                    expan.addClass('expanded');
+                    $('html,body').animate({scrollTop: expan.position().top - 100}, self.options.scrollSpeed);
+                }, 50);
+
+            }else{
+
+                $(self.element).find('.expan').remove();
+
+                var expan = $('<div class="ex-row expan" data-sibling="' + person.data('row') + '"></div>');
+                
+
+                expan.append(media);
+                setTimeout(function() {
+                     media.addClass('show');
+                }, 4);
+               
+                person.after(expan);
+
+                tooltips.addClass('expanded');
+
+                expan.addClass('expanded');
+            }
+
+            last = this;  
+        });
+    }
     // A really lightweight plugin wrapper around the constructor, 
     // preventing against multiple instantiations
     $.fn.expan = function ( options,names ) {
