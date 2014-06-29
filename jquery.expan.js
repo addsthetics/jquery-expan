@@ -51,7 +51,6 @@
 
     Plugin.prototype.init = function () {
         var that = this ;
-        
         that.open.apply(that);
         that.close.apply(that);
     };
@@ -96,21 +95,7 @@
             
             media.html(img+info);
 
-            if(person.data('row') === $(self.element).find('.expan').data('sibling') && !self.options.isResponsive){
-
-                tooltips.addClass('expanded');
-                
-                $(self.element).find('.expan').html(media);
-
-                media.addClass('ex-quick');
-
-                // Give jquery is bit of time to render the new element. If the class is added to the node
-                // before is fully renders, the CSS transition appear choppy. 
-                setTimeout(function() {
-                     media.addClass('show');
-                }, 4);
-
-            }else if(self.options.isResponsive && windowWidth < self.options.mobileBreakingPoint){
+            if(self.options.isResponsive && windowWidth < self.options.mobileBreakingPoint){
 
                 $(self.element).find('.expan').remove();
                 
@@ -125,6 +110,21 @@
                 tooltips.addClass('expanded');
 
                 expan.addClass('expanded');
+                
+            }else if(person.data('row') === $(self.element).find('.expan').data('sibling')){
+
+                tooltips.addClass('expanded');
+                
+                $(self.element).find('.expan').html(media);
+
+                media.addClass('ex-quick');
+
+                // Give jquery is bit of time to render the new element. If the class is added to the node
+                // before is fully renders, the CSS transition appear choppy. 
+                setTimeout(function() {
+                     media.addClass('show');
+                }, 4);
+
             }else {
 
                 $(self.element).find('.expan').remove();
