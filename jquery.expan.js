@@ -152,7 +152,7 @@
         });
     };
 
-    /*Closed method which contacts the expan and removes it from the DOM.*/
+    /*Closed method which contracts the expan and removes it from the DOM.*/
     Plugin.prototype.close = function(){
         var self = this;
 
