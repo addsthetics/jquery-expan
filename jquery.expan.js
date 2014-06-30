@@ -12,7 +12,7 @@
             scrollSpeed  : 1000,
             isResponsive : false,
             mobileBreakingPoint : 480,
-            medieObjTemplate : function(){
+            mediaObjTemplate : function(){
                     return $('<div class="media attribution"></div>')
             },
             mediaLeftTemplate : function(imgURI,name){
@@ -87,7 +87,7 @@
             //Build our media object
             expan = $('<div class="ex-row expan" data-sibling="' + person.data('row') + '"></div>');
 
-            media = self.options.medieObjTemplate();
+            media = self.options.mediaObjTemplate();
 
             img   = self.options.mediaLeftTemplate(item.imgSrc,name);
 
